@@ -3,6 +3,7 @@ import {
   RuleTester,
   batchedSingleLineTests,
   getFixturesRootDir,
+  noFormat,
 } from '../RuleTester';
 
 const ruleTester = new RuleTester({
@@ -15,16 +16,28 @@ const ruleTester = new RuleTester({
 
 ruleTester.run('no-unsafe-call', rule, {
   valid: [
-    'function foo(x: () => void) { x() }',
-    'function foo(x?: { a: () => void }) { x?.a() }',
-    'function foo(x: { a?: () => void }) { x.a?.() }',
-    'new Map()',
-    'String.raw`foo`',
-    'const x = import("./foo");',
+    `
+function foo(x: () => void) {
+  x();
+}
+    `,
+    `
+function foo(x?: { a: () => void }) {
+  x?.a();
+}
+    `,
+    `
+function foo(x: { a?: () => void }) {
+  x.a?.();
+}
+    `,
+    'new Map();',
+    'String.raw`foo`;',
+    "const x = import('./foo');",
   ],
   invalid: [
     ...batchedSingleLineTests({
-      code: `
+      code: noFormat`
 function foo(x: any) { x() }
 function foo(x: any) { x?.() }
 function foo(x: any) { x.a.b.c.d.e.f.g() }
@@ -58,7 +71,7 @@ function foo(x: any) { x.a.b.c.d.e.f.g?.() }
       ],
     }),
     ...batchedSingleLineTests({
-      code: `
+      code: noFormat`
 function foo(x: { a: any }) { x.a() }
 function foo(x: { a: any }) { x?.a() }
 function foo(x: { a: any }) { x.a?.() }
@@ -85,7 +98,7 @@ function foo(x: { a: any }) { x.a?.() }
       ],
     }),
     ...batchedSingleLineTests({
-      code: `
+      code: noFormat`
 function foo(x: any) { new x() }
 function foo(x: { a: any }) { new x.a() }
       `,
@@ -105,7 +118,7 @@ function foo(x: { a: any }) { new x.a() }
       ],
     }),
     ...batchedSingleLineTests({
-      code: `
+      code: noFormat`
 function foo(x: any) { x\`foo\` }
 function foo(x: { tag: any }) { x.tag\`foo\` }
       `,
